@@ -7,7 +7,7 @@
 {% block container %}
 <div>
   <form class="form-inline" method="get">
-      <a class="btn btn-default" type="button" href={{ url_for('flight_edit',id=0) }}>新建</a>
+      <a class="btn btn-default" style="margin-right:50px" type="button" href={{ url_for('flight_edit',id=0) }}>新建</a>
       从
       <input class="form-control" name="from" type="text" value="{{frm}}">
       到
@@ -15,7 +15,7 @@
       <input class="btn btn-default" type="submit" value="查询">
   </form>
 </div>
-<table class="table">
+<table class="table" style="margin-top:10px">
 <tr>
     <th>航班号</th>
     <th>价格</th>
