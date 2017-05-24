@@ -28,7 +28,8 @@ def flight_delete(id):
     f = flights.query.get(id)
     reservations.query.filter(reservations.resvType == 'flight').filter(
         reservations.resvid == f.id).delete()
-    f.delete()
+    db.session.delete(f)
+    db.session.commit()
     return redirect(url_for('flight_page'))
 
 
@@ -52,10 +53,10 @@ def flight_edit(id):
                 if (f.numAvail) < 0:
                     flash('座位数小于已预订数')
                     return render_template('flight_edit.html', form=form)
-                f.save()
             else:
                 f.numAvail = f.numSeats
-                f.save()
+            db.session.add(f)
+            db.session.commit()
             return redirect(url_for('flight_page'))
     return render_template('flight_edit.html', form=form)
 
@@ -63,19 +64,6 @@ def flight_edit(id):
 @app.route('/reservation')
 def reservation_page():
     r = reservations.query.all()
-    for row in r:
-        if row.resvType == 'flight':
-            f = flights.query.get(row.resvid)
-            row.price = f.price
-            row.location = f.fromCity + ' -> ' + f.arivCity
-        elif row.resvType == 'hotel':
-            h = hotels.query.get(row.resvid)
-            row.price = h.price
-            row.location = h.location
-        elif row.resvType == 'car':
-            c = cars.query.get(row.resvid)
-            row.price = c.price
-            row.location = c.location
     return render_template('reservation.html', reservations=r)
 
 
@@ -119,14 +107,13 @@ def reservation_add(type, id):
                 return abort(404)
             r.resvid = id
             custName = form['custName'].data
-            custid = customers.query.filter(customers.custName == custName).first().id
-            if not custid:
+            cust = customers.query.filter(customers.custName == custName).first()
+            if not cust:
                 cust = customers()
                 cust.custName = custName
                 db.session.add(cust)
                 db.session.flush()
-                custid = cust.id
-            r.custid = custid
+            r.custid = cust.id
             db.session.add(r)
             db.session.commit()
             return redirect(url_for('reservation_page'))
@@ -136,7 +123,7 @@ def reservation_add(type, id):
 @app.route('/reservation/delete/<int:id>')
 def reservation_delete(id):
     r = reservations.query.get(id)
-    db.session.delete(r)
+    r.delete()
     db.session.commit()
     return redirect(url_for('reservation_page'))
 
@@ -150,6 +137,14 @@ def customer_page():
         name = ''
         c = customers.query.all()
     return render_template('customer.html', customers=c, name=name)
+
+
+@app.route('/customer/detail/<int:id>')
+def customer_detail(id):
+    c=customers.query.get(id)
+    rs=reservations.query.filter(reservations.custid == id).all()
+    totalprice=sum([r.price() for r in rs])
+    return render_template('customer_detail.html', customer=c,reservations=rs,totalprice=totalprice)
 
 
 @app.route('/customer/edit/<int:id>', methods=['POST', 'GET'])
@@ -168,7 +163,8 @@ def customer_edit(id):
 @app.route('/customer/delete/<int:id>')
 def customer_delete(id):
     c = customers.query.get(id)
-    reservations.query.filter(reservations.custid == id).delete()
+    for r in reservations.query.filter(reservations.custid == id).all():
+        r.delete()
     db.session.delete(c)
     db.session.commit()
     return redirect(url_for('customer_page'))

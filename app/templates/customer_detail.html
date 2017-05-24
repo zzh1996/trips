@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
 {% block container %}
+<h1>客户“{{ customer.custName }}”的预定信息</h1>
+<h3>总价：<code>{{ totalprice }}</code></h3>
 <table class="table" style="margin-top:10px">
 <tr>
     <th>预定号</th>
-    <th>客户姓名</th>
     <th>预定类型</th>
     <th>城市</th>
     <th>价格</th>
@@ -13,7 +14,6 @@
 {% for r in reservations %}
 <tr>
     <td>{{ r.resvKey }}</td>
-    <td>{{ r.customer.custName }}</td>
     <td>{{ r.type() }}</td>
     <td>{{ r.location() }}</td>
     <td>{{ r.price() }}</td>

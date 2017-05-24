@@ -1,8 +1,4 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
-{% import "bootstrap/utils.html" as util %}
-
-{% block title %}Trips{% endblock %}
 
 {% block container %}
 <div>
@@ -23,6 +19,7 @@
     <td>{{ c.id}}</td>
     <td>{{ c.custName }}</td>
     <td>
+        <a class="btn btn-default btn-sm" type="button" href={{ url_for('customer_detail',id=c.id) }}>详情</a>
         <a class="btn btn-default btn-sm" type="button" href={{ url_for('customer_edit',id=c.id) }}>编辑</a>
         <a class="btn btn-default btn-sm" type="button" href={{ url_for('customer_delete',id=c.id) }}>删除</a>
     </td>
