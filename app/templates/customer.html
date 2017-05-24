@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/utils.html" as util %}
+
+{% block title %}Trips{% endblock %}
+
+{% block container %}
+<div>
+  <form class="form-inline" method="get">
+      姓名：
+      <input class="form-control" name="name" type="text" value="{{name}}">
+      <input class="btn btn-default" type="submit" value="查询">
+  </form>
+</div>
+<table class="table" style="margin-top:10px">
+<tr>
+    <th>客户编号</th>
+    <th>客户姓名</th>
+    <th></th>
+</tr>
+{% for c in customers %}
+<tr>
+    <td>{{ c.id}}</td>
+    <td>{{ c.custName }}</td>
+    <td>
+        <a class="btn btn-default btn-sm" type="button" href={{ url_for('customer_edit',id=c.id) }}>编辑</a>
+        <a class="btn btn-default btn-sm" type="button" href={{ url_for('customer_delete',id=c.id) }}>删除</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

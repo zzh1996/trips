@@ -32,6 +32,7 @@
     <td>{{ f.fromCity }}</td>
     <td>{{ f.arivCity }}</td>
     <td>
+        <a class="btn btn-default btn-sm" type="button" href={{ url_for('reservation_add',type=0,id=f.id) }}>预定</a>
         <a class="btn btn-default btn-sm" type="button" href={{ url_for('flight_edit',id=f.id) }}>编辑</a>
         <a class="btn btn-default btn-sm" type="button" href={{ url_for('flight_delete',id=f.id) }}>删除</a>
     </td>

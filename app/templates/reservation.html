@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/utils.html" as util %}
+
+{% block title %}Trips{% endblock %}
+
+{% block container %}
+<table class="table" style="margin-top:10px">
+<tr>
+    <th>预定号</th>
+    <th>客户姓名</th>
+    <th>预定类型</th>
+    <th>城市</th>
+    <th>价格</th>
+    <th></th>
+</tr>
+{% for r in reservations %}
+<tr>
+    <td>{{ r.resvKey }}</td>
+    <td>{{ r.customer.custName }}</td>
+    <td>{{ {'flight':'航班','hotel':'宾馆','car':'出租车'}[r.resvType] }}</td>
+    <td>{{ r.location }}</td>
+    <td>{{ r.price }}</td>
+    <td>
+        <a class="btn btn-default btn-sm" type="button" href={{ url_for('reservation_delete',id=r.resvKey) }}>删除</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
