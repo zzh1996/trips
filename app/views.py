@@ -61,6 +61,100 @@ def flight_edit(id):
     return render_template('flight_edit.html', form=form)
 
 
+@app.route('/hotel')
+def hotel_page():
+    if request.args.get('location'):
+        loc = request.args.get('location')
+        h = hotels.query.filter(hotels.location == loc).all()
+    else:
+        loc = ''
+        h = hotels.query.all()
+    return render_template('hotel.html', hotels=h, loc=loc)
+
+
+@app.route('/hotel/delete/<int:id>')
+def hotel_delete(id):
+    h = hotels.query.get(id)
+    reservations.query.filter(reservations.resvType == 'hotel').filter(
+        reservations.resvid == h.id).delete()
+    db.session.delete(h)
+    db.session.commit()
+    return redirect(url_for('hotel_page'))
+
+
+@app.route('/hotel/edit/<int:id>', methods=['POST', 'GET'])
+def hotel_edit(id):
+    if id == 0:
+        h = hotels()
+    else:
+        h = hotels.query.get(id)
+    form = HotelForm(request.form, h)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            h.location = form['location'].data
+            h.price = form['price'].data
+            h.numRooms = form['numRooms'].data
+            if id > 0:
+                h.numAvail = h.numRooms - reservations.query.filter(reservations.resvType == 'hotel').filter(
+                    reservations.resvid == h.id).count()
+                if (h.numAvail) < 0:
+                    flash('房间数小于已预订数')
+                    return render_template('hotel_edit.html', form=form)
+            else:
+                h.numAvail = h.numRooms
+            db.session.add(h)
+            db.session.commit()
+            return redirect(url_for('hotel_page'))
+    return render_template('hotel_edit.html', form=form)
+
+
+@app.route('/car')
+def car_page():
+    if request.args.get('location'):
+        loc = request.args.get('location')
+        c = cars.query.filter(cars.location == loc).all()
+    else:
+        loc = ''
+        c = cars.query.all()
+    return render_template('car.html', cars=c, loc=loc)
+
+
+@app.route('/car/delete/<int:id>')
+def car_delete(id):
+    c = cars.query.get(id)
+    reservations.query.filter(reservations.resvType == 'car').filter(
+        reservations.resvid == c.id).delete()
+    db.session.delete(c)
+    db.session.commit()
+    return redirect(url_for('car_page'))
+
+
+@app.route('/car/edit/<int:id>', methods=['POST', 'GET'])
+def car_edit(id):
+    if id == 0:
+        c = cars()
+    else:
+        c = cars.query.get(id)
+    form = CarForm(request.form, c)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            c.location = form['location'].data
+            c.price = form['price'].data
+            c.numCars = form['numCars'].data
+            if id > 0:
+                c.numAvail = c.numCars - reservations.query.filter(reservations.resvType == 'car').filter(
+                    reservations.resvid == c.id).count()
+                if (c.numAvail) < 0:
+                    flash('车辆数小于已预订数')
+                    return render_template('car_edit.html', form=form)
+            else:
+                c.numAvail = c.numCars
+            db.session.add(c)
+            db.session.commit()
+            return redirect(url_for('car_page'))
+    return render_template('car_edit.html', form=form)
+
+
 @app.route('/reservation')
 def reservation_page():
     r = reservations.query.all()
@@ -141,10 +235,10 @@ def customer_page():
 
 @app.route('/customer/detail/<int:id>')
 def customer_detail(id):
-    c=customers.query.get(id)
-    rs=reservations.query.filter(reservations.custid == id).all()
-    totalprice=sum([r.price() for r in rs])
-    return render_template('customer_detail.html', customer=c,reservations=rs,totalprice=totalprice)
+    c = customers.query.get(id)
+    rs = reservations.query.filter(reservations.custid == id).all()
+    totalprice = sum([r.price() for r in rs])
+    return render_template('customer_detail.html', customer=c, reservations=rs, totalprice=totalprice)
 
 
 @app.route('/customer/edit/<int:id>', methods=['POST', 'GET'])

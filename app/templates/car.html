@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block container %}
+<h1>出租车管理</h1>
+<div>
+  <form class="form-inline" method="get">
+      <a class="btn btn-default" style="margin-right:50px" type="button" href={{ url_for('car_edit',id=0) }}>新建</a>
+      城市：
+      <input class="form-control" name="location" type="text" value="{{loc}}">
+      <input class="btn btn-default" type="submit" value="查询">
+  </form>
+</div>
+<table class="table" style="margin-top:10px">
+<tr>
+    <th>城市</th>
+    <th>价格</th>
+    <th>剩余车辆</th>
+    <th></th>
+</tr>
+{% for c in cars %}
+<tr>
+    <td>{{ c.location }}</td>
+    <td>{{ c.price }}</td>
+    <td>{{ c.numAvail }}/{{ c.numCars }}</td>
+    <td>
+        <a class="btn btn-default btn-sm" type="button" href={{ url_for('reservation_add',type=2,id=c.id) }}>预定</a>
+        <a class="btn btn-default btn-sm" type="button" href={{ url_for('car_edit',id=c.id) }}>编辑</a>
+        <a class="btn btn-default btn-sm" type="button" href={{ url_for('car_delete',id=c.id) }}>删除</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

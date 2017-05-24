@@ -42,10 +42,10 @@ class reservations(db.Model):
     def location(self):
         if self.resvType == 'flight':
             f = flights.query.get(self.resvid)
-            return f.flightNum+'('+f.fromCity + '->' + f.arivCity+')'
+            return f.flightNum + '(' + f.fromCity + '->' + f.arivCity + ')'
         elif self.resvType == 'hotel':
             h = hotels.query.get(self.resvid)
-            return  h.location
+            return h.location
         elif self.resvType == 'car':
             c = cars.query.get(self.resvid)
             return c.location
@@ -62,12 +62,12 @@ class reservations(db.Model):
             return c.price
 
     def type(self):
-        return {'flight':'航班','hotel':'宾馆','car':'出租车'}[self.resvType]
+        return {'flight': '航班', 'hotel': '宾馆', 'car': '出租车'}[self.resvType]
 
     def delete(self):
         if self.resvType == 'flight':
             f = flights.query.get(self.resvid)
-            f.numAvail+=1
+            f.numAvail += 1
             db.session.add(f)
         elif self.resvType == 'hotel':
             h = hotels.query.get(self.resvid)
